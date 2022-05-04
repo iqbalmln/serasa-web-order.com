@@ -14,7 +14,9 @@ module.exports = {
       },
       colors: {
         'sr-green': '#04C99E',
+        'sr-old-green': '#04B58E',
         'sr-bg': '#F5F5F5',
+        'sr-bg-success': '#EBFAED',
         'sr-primary': '#272A2A',
         'sr-secondary': '#717A7A',
         'sr-placeholder': '#A5ABAB',
