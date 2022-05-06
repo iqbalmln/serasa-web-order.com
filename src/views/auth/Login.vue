@@ -12,27 +12,53 @@
     <div class="w-3/4 flex flex-col gap-4 rounded-sr-14 shadow-sr-drop-shadow p-10 bg-white">
       <div class="flex items-center w-full">
         <Icon icon="bx-user-circle" class="text-sr-icon text-3xl" />
-        <Input type="text" placeholder="Isi Nama Anda" />
+        <Input type="text" placeholder="Isi Nama Anda" v-model="user.username" />
       </div>
       <div class="flex items-center w-full">
         <Icon icon="bxs-phone" class="text-sr-icon text-3xl" />
-        <Input type="number" placeholder="Isi Nomor Telepon Anda" />
+        <Input type="number" placeholder="Isi Nomor Telepon Anda" v-model="user.phone_number" />
       </div>
-      <button class="bg-sr-green p-14px text-white rounded-lg">Masuk</button>
+      <button class="bg-sr-green p-14px text-white rounded-lg" @click="inputUser">
+        <router-link to="/home">
+          Masuk
+        </router-link>
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 
-import Input from '/Users/iqbalmaulana/Documents/Final Project/serasaapp/serasaresto.com/src/components/base/Input.vue'
-import Icon from '/Users/iqbalmaulana/Documents/Final Project/serasaapp/serasaresto.com/src/components/base/Icon.vue'
+import Input from '@/components/base/Input.vue'
+import Icon from '@/components/base/Icon.vue'
+
+import axios from 'axios'
 
 export default {
   name: 'Login',
   components: {
     Icon,
     Input
+  },
+
+  data () {
+    return {
+      user: {
+        username: '',
+        phone_number: ''
+      }
+    }
+  },
+
+  methods: {
+    inputUser() {
+      axios.post('http://localhost:8000/v1/auth/user', this.user)
+      .then( function(response) {
+        console.log(response);
+      }).catch( function(response) {
+        console.log(response);
+      })
+    }
   }
 }
 </script>
