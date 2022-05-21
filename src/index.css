@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.progress {
+  position: relative;
+}
+.progress::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  border: 1px dashed #04C99E;
+  width: 1px;
+  height: 80px;
+  /* background: #04C99E; */
+  transform: translate(-50%, -50%);
+}
+.card {
+  box-shadow: 2px 0px 16px rgba(1, 47, 45, 0.04);
+}
