@@ -25,6 +25,9 @@ const routes = [
     path: '/auth/login',
     name: 'Login',
 		component: () => import('../views/auth/Login.vue'),
+		meta: {
+			isGuest: true,
+		}
   },
   {
     path: '/home',
@@ -63,10 +66,12 @@ router.beforeEach((to, from, next) => {
 	if (to.meta.requiresAuth && !auth.isLoggedIn()) {
     next({
 			name: "Login",
-      // path: '/auth/login',
-      // query: { redirect: to.fullPath },
     })
-  } else {
+  } else if (to.meta.isGuest && auth.isLoggedIn()) {
+		next({
+			name: "Home",
+		})
+	} else {
 		next()
 	}
 })
