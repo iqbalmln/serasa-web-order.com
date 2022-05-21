@@ -25,27 +25,57 @@
         </div>
       </div>
     </aside>
-    <section class="px-16 pt-10">
+    <article class="px-16 pt-10">
       <header class="flex flex-col gap-8">
-        <div class="flex gap-2">
-          <p>Status Pesanan</p>
-          <Icon icon="bxs-hourglass-bottom" />
+        <div class="flex items-center gap-2">
+          <p class="font-semibold text-xl">Status Pesanan</p>
+          <Icon icon="bxs-hourglass-bottom" class="text-xl" />
         </div>
         <div class="flex items-center gap-4">
-          <Icon icon="bxs-hourglass-bottom" />
+          <Icon icon="bxs-hourglass-bottom" class="text-5xl" />
+          <div class="flex flex-col gap-2 text-sm">
+            <p class="font-semibold">Pesanan kamu sedang disajikan</p>
+            <p class="text-sr-secondary">15 Menit</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 mt-16 text-sm">
+          <Icon icon="bxs-check-circle" class="text-5xl text-sr-green progress" />
           <div class="flex flex-col gap-2">
-            <p>Pesanan kamu sedang disajikan</p>
-            <p>15 Menit</p>
+            <p class="font-semibold">Yes! Pesanan kamu telah disajikan</p>
+            <p class="text-sr-secondary">Tunggu.. Makanan mu segera diantar. Selamat makan!</p>
           </div>
         </div>
       </header>
-    </section>
+      <section class="mt-10">
+        <p class="font-semibold mb-4">
+          <span class="text-sr-secondary font-normal">Nomor Order :</span>
+          #021
+        </p>
+        <article class="bg-white rounded p-6 card">
+          <MenuItem
+            v-for="order in orders"
+            :key="order.id"
+            :src="order.src"
+            :title="order.title"
+            :note="order.note"
+            :unit="order.unit"
+            :price="order.price"
+          />
+          <div class="flex justify-between text-sm font-semibold">
+            <p>Total</p>
+            <p>{{ `Rp. ${totalPrice}` }}</p>
+          </div>
+        </article>
+      </section>
+      <button class="w-full bg-sr-green mt-64 py-3 text-white rounded-lg">Kembali ke menu</button>
+    </article>
   </div>  
 </template>
 
 <script>
 
 import Icon from '../components/base/Icon.vue'
+import MenuItem from '../components/commons/MenuItem.vue'
 import Nav from '../components/Nav.vue'
 
 export default {
@@ -53,12 +83,32 @@ export default {
 
   components: {
     Icon,
+    MenuItem,
     Nav
   },
 
   data () {
     return {
-      isActive: false
+      isActive: false,
+      orders: [
+        {
+          id: 0,
+          src: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
+          title: 'Prawn with Salad',
+          note: 'Catatan : Tidak terlalu pedas',
+          unit: 'x 2',
+          price: 40000
+        },
+        {
+          id: 1,
+          src: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=962&q=80',
+          title: 'Pizza With salad',
+          note: 'Catatan : Tidak menggunakan mayonaise',
+          unit: 'x 2',
+          price: 300000
+        },
+      ],
+      total: null
     }
   },
 
