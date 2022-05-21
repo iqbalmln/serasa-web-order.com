@@ -1,5 +1,5 @@
 <template>
-  <div class="relative bg-sr-bg">
+  <div class="relative h-screen bg-sr-bg border border-blue-500">
     <Nav class="sticky top-0 left-0 z-20">
       <template #icon>
         <div>
@@ -40,33 +40,26 @@
         </header>
         <div class="grid grid-cols-2 gap-8">
           <Card
-            v-for="food in foods" :key="food.id"
-            :src="food.src"
-            :foodMenu="food.foodMenu"
-            :foodDescription="food.foodDescription"
-            :foodPrice="food.foodPrice"
-          />
-        </div>
-      </section>
-      <!-- Minuman -->
-      <section class="flex flex-col gap-6 py-8">
-        <header class="flex items-center gap-2">
-          <p class="text-left text-sr-primary text-xl font-semibold">
-            Minuman
-          </p>
-            <Icon icon="bxs-drink" class="text-2xl text-sr-icon" />
-        </header>
-        <div class="grid grid-cols-2 gap-8">
-          <Card
-            v-for="drink in drinks" :key="drink.id"
-            :src="drink.src"
-            :foodMenu="drink.drinkMenu"
-            :foodDescription="drink.drinkDescription"
-            :foodPrice="drink.drinkPrice"
-          />
+            v-for="menu in menus" :key="menu.id"
+            :name="menu.name"
+            :price="menu.price"
+            :description="menu.description"
+            :in_stock="menu.in_stock"
+            :type="menu.type"
+            :quantity="carts.find(cart => cart.menu_id === menu.id) ? carts.find(cart => cart.menu_id === menu.id).quantity : 0"
+            :notes="carts.find(cart => cart.menu_id === menu.id) ? carts.find(cart => cart.menu_id === menu.id).notes : null"
+            @increment="onIncrement(menu.id)"
+            @decrement="onDecrement(menu.id)"
+          >
+          </Card>
         </div>
       </section>
     </main>
+    <Modal
+      class="absolute bottom-24 bg-sr-green text-center mx-auto py-3 font-semibold text-base"
+      :class="{ 'invisible' : showModal }"
+      :priceItem='priceItem'
+    />
   </div>
 </template>
 
@@ -75,6 +68,7 @@
 import Card from '../components/commons/Card.vue'
 import Icon from '../components/base/Icon.vue'
 import Input from '../components/base/Input.vue'
+import Modal from '../components/base/Modal.vue'
 import Nav from '../components/Nav.vue'
 
 export default {
@@ -84,58 +78,62 @@ export default {
     Card,
     Icon,
     Input,
+    Modal,
     Nav
   },
 
   data () {
     return {
-      foods: [
+      menus: [
         {
           id: 0,
-          src: 'https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
-          foodMenu: 'Nasi Padang',
-          foodDescription: 'lorem ipsum dolor sit amet',
-          foodPrice: 'Rp.50.000'
+          name: 'Nasi Goreng',
+          thumbnail: 'https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
+          price: 5000,
+          description: 'blabla',
+          in_stock: true,
+          type: 'makanan'
         },
         {
           id: 1,
-          src: 'https://images.unsplash.com/photo-1546039907-7fa05f864c02?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
-          foodMenu: 'Nasi Padang',
-          foodDescription: 'lorem ipsum dolor sit amet',
-          foodPrice: 'Rp.50.000'
-        },
-        {
-          id: 2,
-          src: 'https://images.unsplash.com/photo-1509482560494-4126f8225994?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
-          foodMenu: 'Pile of cookies',
-          foodDescription: 'lorem ipsum dolor sit amet',
-          foodPrice: 'Rp.50.000'
-        },
-        {
-          id: 3,
-          src: 'https://images.unsplash.com/photo-1559070135-f259b369bf87?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
-          foodMenu: 'Nasi Padang',
-          foodDescription: 'lorem ipsum dolor sit amet',
-          foodPrice: 'Rp.50.000'
+          name: 'Nasi Padang',
+          thumbnail: 'https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
+          price: 9000,
+          description: 'blabla',
+          in_stock: true,
+          type: 'makanan'
         }
       ],
-      drinks: [
+      carts: [
         {
           id: 0,
-          src: 'https://images.unsplash.com/photo-1638176066359-7bcd6289c9d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
-          drinkMenu: 'Pome Juice',
-          drinkDescription: 'Fresh Pome with Kiwi and berry',
-          drinkPrice: 'Rp.40.000'
+          quantity: 0,
+          notes: 'Gak pedes',
+          menu_id: 0,
+          menu: {
+            name: 'Nasi Goreng',
+            price: 5000,
+            description: 'blabla',
+            in_stock: true
+          }
         },
         {
           id: 1,
-          src: 'https://images.unsplash.com/photo-1638176066359-7bcd6289c9d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80',
-          drinkMenu: 'Pome Juice',
-          drinkDescription: 'Fresh Pome with Kiwi and berry',
-          drinkPrice: 'Rp.40.000'
+          quantity: 0,
+          notes: 'Ga pake sambel',
+          menu_id: 1,
+          menu: {
+            name: 'Nasi Padang',
+            price: 9000,
+            description: 'blabla',
+            in_stock: true
+          }
         }
       ],
-      isActive: false
+      isActive: false,
+      showModal: true,
+      total: 0,
+      priceItem: 0
     }
   },
 
@@ -145,6 +143,41 @@ export default {
         this.isActive = true;
       } else {
         this.isActive = false;
+      }
+    },
+    // menuFinder(cart, menuId) {
+    //   return cart.menu_id === menuId
+    // },
+    onIncrement(menuId) {
+      const menu = this.carts.find(cart => cart.menu_id === menuId)
+      if(!menu) {
+        this.carts.push({
+          id: menuId,
+          quantity: 1,
+          notes: null,
+          menu: this.menus.find(menu => menu.id === menuId)
+        })
+      } else {
+        menu.quantity++
+        this.showModal = false
+        this.priceItem = this.priceItem + menu.menu.price
+      }
+    },
+    onDecrement(menuId) {
+      // const menuFinder = cart => cart.menu_id === menuId
+      const menu = this.carts.find(cart => cart.menu_id === menuId)
+
+      if(menu) {
+
+        if(menu.quantity === 0) {
+          this.carts = this.carts.filter(cart => cart.menu_id === menuId)
+        } else {
+            menu.quantity--
+            this.priceItem = this.priceItem - menu.menu.price
+            if (menu.quantity < 1) {
+              this.showModal = true
+            }
+        }
       }
     }
   }
