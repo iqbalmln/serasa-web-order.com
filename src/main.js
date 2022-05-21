@@ -1,15 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
-
-// Import CSS Global
-import './index.css'
-
-// Import Axios Global
-import axios from 'axios'
-
-Vue.prototype.$http = axios
-
 import router from './router'
+import './index.css'
 
 Vue.config.productionTip = false
 
