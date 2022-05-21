@@ -11,7 +11,7 @@
         <p class="pt-4 pb-2 text-xs text-sr-secondary">
           {{ description }}
         </p>
-        <p class="text-sr-primary text-sm font-semibold">{{ price }}</p>
+        <p class="text-sr-primary text-sm font-semibold">{{ formatPrice(price) }}</p>
       </div>
     </div>
     <Input type="textarea" placeholder="Catatan..." />
@@ -24,9 +24,9 @@
 </template>
 
 <script>
-
 import Input from '../base/Input.vue'
 import Icon from '../base/Icon.vue'
+
 export default {
   name: 'Card',
 
@@ -56,6 +56,25 @@ export default {
       type: Number,
       default: 0
     }
-  }
+  },
+
+	methods: {
+		formatPrice (angka, prefix = "Rp") {
+			var number_string = String(angka).replace(/[^,\d]/g, '').toString(),
+			split   		= number_string.split(','),
+			sisa     		= split[0].length % 3,
+			rupiah     		= split[0].substr(0, sisa),
+			ribuan     		= split[0].substr(sisa).match(/\d{3}/gi);
+		
+			// tambahkan titik jika yang di input sudah menjadi angka ribuan
+			if(ribuan){
+				const separator = sisa ? '.' : '';
+				rupiah += separator + ribuan.join('.');
+			}
+		
+			rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+			return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
+		}
+	}
 }
 </script>
